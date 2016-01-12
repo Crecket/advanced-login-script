@@ -1,0 +1,24 @@
+{
+  "name": "crecket/advanced-login-script",
+  "description": "More advanced login script with more features",
+  "license": "WTFPL",
+  "homepage": "https://github.com/Crecket/advanced-login-script",
+  "authors": [
+    {
+      "name": "Gregory Goijaerts",
+      "email": "crecketgaming@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "phpmailer/phpmailer": "^5.2",
+    "crecket/secure-functions": "^1.0",
+    "doctrine/dbal": "^2.5",
+    "endroid/qrcode": "^1.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Crecket\\AdvancedLogin\\": "src/"
+    }
+  }
+}
