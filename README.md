@@ -2,7 +2,6 @@
 
 [![GitHub release](https://img.shields.io/github/release/crecket/advanced-login-script.svg)](https://github.com/Crecket/advanced-login-script/)
 [![License](https://poser.pugx.org/crecket/advanced-login-script/license)](https://packagist.org/packages/crecket/advanced-login-script)
-[![Build Status](https://travis-ci.org/Crecket/advanced-login-script.svg?branch=master)](https://travis-ci.org/Crecket/advanced-login-script)
 ## Content
 1. Introduction
 2. Features
