@@ -475,7 +475,8 @@ class Login extends Core
                         'username' => ':username',
                         'password' => ':password',
                         'email' => ':email',
-                        'activation_code' => ':code'
+                        'activation_code' => ':code',
+                        'activation_created' => 'now()'
                     )
                 )
                 ->setParameter(':username', $username)
