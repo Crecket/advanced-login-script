@@ -37,8 +37,7 @@ Advanced-login-script features a bunch of basic and more advanced options to man
 3. Call the class and add config location in the first parameter
 ```PHP
 require_once '/config/config.php'; // include the config file
-$login = new Crecket\AdvancedLogin\Login();
-//call the class and add the config location to the parameters
+$login = new Crecket\AdvancedLogin\Login(); // call the class
 ```
 
 ##### Config setup
@@ -82,6 +81,15 @@ Remember_me cookie values
 #### Log in a user through login form
 ```PHP
 $loginScript->login($_POST['username'], $_POST['password'], $_POST['remember_me']);
+```
+
+#### Verify if user is logged in
+
+```PHP
+if (Crecket\AdvancedLogin\Core::$loggedIn !== false) {
+    // Logged in
+}
+// Also, if a user is logged in. The session will be stored in $_SESSION['currentuser']
 ```
 
 #### Register a new user
