@@ -1,6 +1,5 @@
 # advanced-login-script
 
-[![GitHub release](https://img.shields.io/github/release/crecket/advanced-login-script.svg)](https://github.com/Crecket/advanced-login-script/)
 [![License](https://poser.pugx.org/crecket/advanced-login-script/license)](https://packagist.org/packages/crecket/advanced-login-script)
 ## Content
 1. Introduction
