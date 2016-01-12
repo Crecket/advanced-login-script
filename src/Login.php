@@ -780,7 +780,6 @@ class Login extends Core
             header('Content-type: image/png');
 
             $link = ADVANCEDLOGINSCRIPT_QR_PAGE;
-
             $link = str_replace('{code}', $new_code, $link);
 
             $qr_image = new \Endroid\QrCode\QrCode();
@@ -825,7 +824,7 @@ class Login extends Core
 
             $update_user = $this->newBuilder()
                 ->update('qr_activation')
-                ->where('AND qr_code = :qr')
+                ->where('qr_code = :qr')
                 ->set('activated', '1')
                 ->set('user_id', ':id')
                 ->setParameter('id', parent::$loggedIn)
