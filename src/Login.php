@@ -488,7 +488,6 @@ class Login extends Core
             if ($new_user > 0) {
                 $userid = $this->conn->lastInsertId();
                 $this->sendActivationCode($userid);
-                $this->setMessage('success', ADVANCEDLOGINSCRIPT_REGISER_SUCCESS_NOMAIL);
                 unset($_SESSION['stored_register_fields']);
                 return $userid;
             }
@@ -684,8 +683,7 @@ class Login extends Core
                         ->where('id = :id')
                         ->setParameter('id', $user_data['id'])
                         ->execute();
-                    echo $update_user;
-                    exit;
+
                     if ($update_user === 1) {
                         $this->setMessage('success', ADVANCEDLOGINSCRIPT_USER_ACTIVATED_SUCCESS);
                         return true;
