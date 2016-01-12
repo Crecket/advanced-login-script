@@ -105,7 +105,6 @@ class Login extends Core
 
         }
 
-
         // update some data
         $update_user = $this->newBuilder()
             ->update('users')
@@ -173,10 +172,12 @@ class Login extends Core
             } else {
                 // check if QRcode session is set
                 if (!empty($_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['id'])) {
-                    if ($this->checkQrActivated($_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['id'], $_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['qr'])) {
+                    
+                    $qrData = $this->checkQrActivated($_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['qr']);
+                    if ($qrData !== false) {
                         // QRCode has been activated
-                        $this->addLoginAttempt($_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['id'], 'qrcode');
-                        $this->login_user($_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['id']);
+                        $this->addLoginAttempt($qrData['user_id'], 'qrcode');
+                        $this->login_user($qrData['user_id']);
                         unset($_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]);
                         $this->destroyOldQrCodes();
                     } else {
@@ -747,23 +748,13 @@ class Login extends Core
      * @return array
      * @throws \Endroid\QrCode\Exceptions\ImageFunctionUnknownException
      */
-    public function createQrCode($user, $returnimage = false)
+    public function createQrCode($returnimage = false)
     {
-        // Check if user exists
-        $get_user = $this->newBuilder()
-            ->select('*')
-            ->from('users')
-            ->where('id = :id')
-            ->setParameter('id', $user)
-            ->execute();
-
-        if ($get_user->rowcount() === 1) {
-
             // delete old qr codes
             $this->newBuilder()
                 ->delete('qr_activation')
-                ->where('user_id = :id')
-                ->setParameter('id', $user)
+                ->where('ip = :ip')
+                ->setParameter('ip', $_SESSION['REMOTE_ADDR'])
                 ->execute();
 
 
@@ -775,13 +766,13 @@ class Login extends Core
                 ->insert('qr_activation')
                 ->values(
                     array(
-                        'user_id' => ':id',
+                        'ip' => ':ip'
                         'qr_code' => ':qr',
                         'expires' => ':expires'
                     )
                 )
-                ->setParameter(':id', $user)
                 ->setParameter(':qr', $new_code)
+                ->setParameter(':ip', $_SESSION['REMOTE_ADDR'])
                 ->setParameter(':expires', date('Y-m-d H:i:s', strtotime('+30seconds')))
                 ->execute();
 
@@ -791,7 +782,7 @@ class Login extends Core
 
                 $link = ADVANCEDLOGINSCRIPT_QR_PAGE;
 
-                $link = str_replace('{code}', $new_code, str_replace('{userid}', $user, $link));
+                $link = str_replace('{code}', $new_code, $link);
 
                 $qr_image = new \Endroid\QrCode\QrCode();
                 $qr_image
@@ -810,27 +801,22 @@ class Login extends Core
             }
 
             $_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY] = array(
-                'id' => $user,
                 'qr' => $new_code
             );
 
             return array(
-                'id' => $user,
                 'qr' => $new_code,
                 'qr_image' => $qr_image
             );
-        }
-        return false;
     }
 
-    public function verifyQrCode($user, $code)
+    public function verifyQrCode($code)
     {
 
         $get_user = $this->newBuilder()
             ->select('*')
             ->from('qr_activation')
-            ->where('user_id = :id AND qr_code = :qr AND expires > now()')
-            ->setParameter('id', $user)
+            ->where('qr_code = :qr AND expires > now()')
             ->setParameter('qr', $code)
             ->execute();
 
@@ -838,9 +824,10 @@ class Login extends Core
 
             $update_user = $this->newBuilder()
                 ->update('qr_activation')
-                ->where('user_id = :id AND qr_code = :qr')
+                ->where('AND qr_code = :qr')
                 ->set('activated', '1')
-                ->setParameter('id', $user)
+                ->set('user_id', ':id')
+                ->setParameter('id', parent::$loggedIn)
                 ->setParameter('qr', $code)
                 ->execute();
 
@@ -852,19 +839,19 @@ class Login extends Core
         return false;
     }
 
-    public function checkQrActivated($user, $code)
+    public function checkQrActivated($code)
     {
-        if (!empty($user) && !empty($code)) {
+        if (!empty($code)) {
             $this->destroyOldQrCodes();
             $get_user = $this->newBuilder()
                 ->select('*')
                 ->from('qr_activation')
-                ->where('user_id = :id AND qr_code = :qr AND activated = 1')
-                ->setParameter('id', $user)
+                ->where('qr_code = :qr AND activated = 1 AND ip = :ip')
                 ->setParameter('qr', $code)
+                ->setParameter('ip', $_SERVER['REMOTE_ADDR'])
                 ->execute();
             if ($get_user->rowcount() === 1) {
-                return true;
+                return $get_user->fetch();
             }
         }
         return false;
