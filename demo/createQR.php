@@ -7,7 +7,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/src/configfiles/config.php';
 
 $login = new Crecket\AdvancedLogin\Login();
 
-$login->createQrCode(1, true);
+$login->createQrCode(true);
 
 
 
