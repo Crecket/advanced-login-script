@@ -242,7 +242,7 @@ class Login extends Core
             ->delete('user_auth')
             ->where('userid = :id AND ip = :ip')
             ->setParameter('id', $_SESSION['currentuser']['id'])
-            ->setParameter('ip', $_SERVER['REMOTE_ADDR'])
+            ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
             ->execute();
 
         // destroy remember me cookie
@@ -292,7 +292,7 @@ class Login extends Core
                     ->from('user_auth')
                     ->where('selector = :selector AND ip = :ip')
                     ->setParameter('selector', $cookieData[0])
-                    ->setParameter('ip', $_SERVER['REMOTE_ADDR'])
+                    ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
                     ->execute();
 
                 if ($selectorData > 0) {
@@ -301,7 +301,7 @@ class Login extends Core
                     $selectorData = $selectorData->fetch();
 
                     // compare hash and check if cookie has expired
-                    if ($selectorData['token'] == hash('sha256', $cookieData[1] . $_SERVER['REMOTE_ADDR'] . ADVANCEDLOGINSCRIPT_SECRET_KEY) && $selectorData['expires'] > date('Y-m-d H:i:s')) {
+                    if ($selectorData['token'] == hash('sha256', $cookieData[1] . filter_input(INPUT_SERVER, 'REMOTE_ADDR') . ADVANCEDLOGINSCRIPT_SECRET_KEY) && $selectorData['expires'] > date('Y-m-d H:i:s')) {
                         return $selectorData['userid'];
                     }
                 }
@@ -322,7 +322,7 @@ class Login extends Core
         $selector = \SecureFuncs\SecureFuncs::randomString(32);
         $random = \SecureFuncs\SecureFuncs::randomString(64);
         $token = $selector . "||" . $random;
-        $randomDb = hash('sha256', $random . $_SERVER['REMOTE_ADDR'] . ADVANCEDLOGINSCRIPT_SECRET_KEY);
+        $randomDb = hash('sha256', $random . filter_input(INPUT_SERVER, 'REMOTE_ADDR') . ADVANCEDLOGINSCRIPT_SECRET_KEY);
         $expiresDb = date('Y/m/d H:i:s', ADVANCEDLOGINSCRIPT_COOKIE_STORE_DURATION);
 
 //        $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE);
@@ -331,7 +331,7 @@ class Login extends Core
             $this->newBuilder()
                 ->delete('user_auth')
                 ->where('ip = :ip AND userid = :id')
-                ->setParameter('ip', $_SERVER['REMOTE_ADDR'])
+                ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
                 ->setParameter('id', $userid)
                 ->execute();
 
@@ -350,7 +350,7 @@ class Login extends Core
                 ->setParameter('token', $randomDb)
                 ->setParameter('id', $userid)
                 ->setParameter('expires', $expiresDb)
-                ->setParameter('ip', $_SERVER['REMOTE_ADDR'])
+                ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
                 ->execute();
             if ($insertToken === 1) {
                 return true;
@@ -379,7 +379,7 @@ class Login extends Core
                     'target' => ':target',
                 )
             )
-            ->setParameter('ip', $_SERVER['REMOTE_ADDR'])
+            ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
             ->setParameter('type', $type)
             ->setParameter('target', $target)
             ->execute();
@@ -396,7 +396,7 @@ class Login extends Core
             ->select('*')
             ->from('login_attempts')
             ->where('ip = :ip')
-            ->setParameter('ip', $_SERVER['REMOTE_ADDR'])
+            ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
             ->where("login_type = 'fail' AND datetime > DATE_SUB(NOW(), INTERVAL 15 MINUTE)")
             ->execute();
         return $check_logins->rowcount();
@@ -754,7 +754,7 @@ class Login extends Core
             $this->newBuilder()
                 ->delete('qr_activation')
                 ->where('ip = :ip')
-                ->setParameter('ip', $_SESSION['REMOTE_ADDR'])
+                ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
                 ->execute();
 
 
@@ -772,7 +772,7 @@ class Login extends Core
                     )
                 )
                 ->setParameter(':qr', $new_code)
-                ->setParameter(':ip', $_SESSION['REMOTE_ADDR'])
+                ->setParameter(':ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
                 ->setParameter(':expires', date('Y-m-d H:i:s', strtotime('+30seconds')))
                 ->execute();
 
@@ -848,7 +848,7 @@ class Login extends Core
                 ->from('qr_activation')
                 ->where('qr_code = :qr AND activated = 1 AND ip = :ip')
                 ->setParameter('qr', $code)
-                ->setParameter('ip', $_SERVER['REMOTE_ADDR'])
+                ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
                 ->execute();
             if ($get_user->rowcount() === 1) {
                 return $get_user->fetch();
