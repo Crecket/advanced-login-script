@@ -109,7 +109,7 @@ class Login extends Core
         $update_user = $this->newBuilder()
             ->update('users')
             ->set('last_login', 'now()')
-            ->where('id', ':id')
+            ->where('id = :id')
             ->setParameter(":id", $record['id']);
 
 
