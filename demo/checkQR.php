@@ -7,7 +7,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/src/configfiles/config.php';
 
 $login = new Crecket\AdvancedLogin\Login();
 
-if ($login->verifyQrCode(@$_GET['user'], @$_GET['code'])) {
+if ($login->verifyQrCode(@$_GET['code'])) {
     echo "Activated!";
 } else {
     echo "Not Activated!";
