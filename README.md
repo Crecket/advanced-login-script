@@ -1,14 +1,6 @@
 # advanced-login-script
 
 [![License](https://poser.pugx.org/crecket/advanced-login-script/license)](https://packagist.org/packages/crecket/advanced-login-script)
-## Content
-1. Introduction
-2. Features
-3. Requirements
-4. Examples
-5. Installation
-6. Todo
-7. License
 
 ## Introduction
 Advanced-login-script features a bunch of basic and more advanced options to manage your users.
