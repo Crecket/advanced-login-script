@@ -137,7 +137,7 @@ class Core
     public function deleteCookie($name)
     {
 
-        setcookie($name, null, time() - 3600, ADVANCEDLOGINSCRIPT_FOLDE);
+        setcookie($name, null, time() - 3600, ADVANCEDLOGINSCRIPT_COOKIE_FOLDER);
     }
 
 }

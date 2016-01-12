@@ -295,7 +295,7 @@ class Login extends Core
                     ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
                     ->execute();
 
-                if ($selectorData > 0) {
+                if ($selectorData->rowcount() > 0) {
 
                     // fetch database results
                     $selectorData = $selectorData->fetch();
@@ -801,6 +801,8 @@ class Login extends Core
 
         $_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['qr'] = $new_code;
 
+        $this->destroyOldQrCodes();
+
         return array(
             'qr' => $new_code,
             'qr_image' => $qr_image
@@ -847,7 +849,6 @@ class Login extends Core
     public function checkQrActivated($code)
     {
         if (!empty($code)) {
-            $this->destroyOldQrCodes();
             $get_user = $this->newBuilder()
                 ->select('*')
                 ->from('qr_activation')
