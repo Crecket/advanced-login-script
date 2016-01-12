@@ -133,16 +133,16 @@ If the user is logged in on a phone, they can scan the QR code. Once you open th
 Creating a QR code is simple:
 ```PHP
 // Create a QR code on your device
-$login->createQrCode(1, true); // Returns a PNG image + headers
+$login->createQrCode(true); // Returns a PNG image + headers
 
-$login->createQrCode(1); // Returns a array with the ID, Code and Image, you'll need to generate the QR code yourself
+$login->createQrCode(); // Returns a array with the ID, Code and Image, you'll need to generate the QR code yourself
 ```
 All QR codes are valid for 30 seconds
 
 Verify a QR code
 ```PHP
 // Verify this with a QR code reader, you'll need to be logged in to the website in order to activate the code
-if ($login->verifyQrCode(@$_GET['user'], @$_GET['code'])) {
+if ($login->verifyQrCode(@$_GET['code'])) {
     echo "Activated!";
 } else {
     echo "Not Activated!";
