@@ -241,7 +241,7 @@ class Login extends Core
             ->delete('user_auth')
             ->where('userid = :id AND ip = :ip')
             ->setParameter('id', $_SESSION['currentuser']['id'])
-            ->setParameter('id', $_SERVER['REMOTE_ADDR'])
+            ->setParameter('ip', $_SERVER['REMOTE_ADDR'])
             ->execute();
 
         // destroy remember me cookie
