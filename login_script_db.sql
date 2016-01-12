@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
 CREATE TABLE IF NOT EXISTS `qr_activation` (
   `user_id` int(11) NOT NULL,
   `qr_code` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `ip` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `activated` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
