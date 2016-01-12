@@ -5,19 +5,23 @@ session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/src/configfiles/config.php';
 
-$login = new Crecket\AdvancedLogin\Login();
+use Crecket\AdvancedLogin\Login;
+use Crecket\AdvancedLogin\Core;
+use SecureFuncs\SecureFuncs;
 
-if (Crecket\AdvancedLogin\Core::$loggedIn !== false) {
+$login = new Login();
+
+if (Core::$loggedIn !== false) {
     header('Location: index.php');
 }
 
-if (!empty($_POST['username']) && \SecureFuncs\SecureFuncs::getFormToken('login', $_POST['form_token']) !== false) {
+if (!empty($_POST['username']) && SecureFuncs::getFormToken('login', $_POST['form_token']) !== false) {
     if ($login->login($_POST['username'], $_POST['password'], @$_POST['rememberme']) === true) {
         header('Location: index.php');
     }
 }
 $loginAttempts = $login->checkFailedLogins();
-$formToken = \SecureFuncs\SecureFuncs::setFormtoken('login');
+$formToken = SecureFuncs::setFormtoken('login');
 ?>
 <!DOCTYPE html>
 <html>

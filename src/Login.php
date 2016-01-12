@@ -172,7 +172,7 @@ class Login extends Core
             } else {
                 // check if QRcode session is set
                 if (!empty($_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['id'])) {
-                    
+
                     $qrData = $this->checkQrActivated($_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['qr']);
                     if ($qrData !== false) {
                         // QRCode has been activated
@@ -430,7 +430,7 @@ class Login extends Core
 
         if (empty($username)) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_EMPTY_NAME);
-        } elseif (preg_match("/^[0-9A-Za-z_]+$/", username) == 0) {
+        } elseif (preg_match("/^[0-9A-Za-z_]+$/", $username) == 0) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_INVALID_NAME);
         } elseif (empty($password) || empty($password_repeat)) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_EMPTY_PASSWORDS);
@@ -645,7 +645,8 @@ class Login extends Core
      * To avoid users created fake accounts and block emails, remove all accounts which have expired
      * @return mixed
      */
-    public function cleanNotActivatedAccounts(){
+    public function cleanNotActivatedAccounts()
+    {
         return $this->newBuilder()
             ->delete('users')
             ->where('active = 0 AND activation_created < DATE_SUB(NOW(), INTERVAL 1 DAY)')
@@ -743,73 +744,73 @@ class Login extends Core
 
     /**
      * Leave param2 empty if you want to generate the qrcode yourself using the returned data
-     * @param $user
      * @param bool $returnimage
      * @return array
      * @throws \Endroid\QrCode\Exceptions\ImageFunctionUnknownException
      */
     public function createQrCode($returnimage = false)
     {
-            // delete old qr codes
-            $this->newBuilder()
-                ->delete('qr_activation')
-                ->where('ip = :ip')
-                ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
-                ->execute();
+        // delete old qr codes
+        $this->newBuilder()
+            ->delete('qr_activation')
+            ->where('ip = :ip')
+            ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
+            ->execute();
 
+        // Random code
+        $new_code = \SecureFuncs\SecureFuncs::randomString(64);
 
-            // Random code
-            $new_code = \SecureFuncs\SecureFuncs::randomString(64);
-
-            // insert qr code into the database
-            $this->newBuilder()
-                ->insert('qr_activation')
-                ->values(
-                    array(
-                        'ip' => ':ip'
-                        'qr_code' => ':qr',
-                        'expires' => ':expires'
-                    )
+        // insert qr code into the database
+        $this->newBuilder()
+            ->insert('qr_activation')
+            ->values(
+                array(
+                    'ip' => ':ip',
+                    'qr_code' => ':qr',
+                    'expires' => ':expires'
                 )
-                ->setParameter(':qr', $new_code)
-                ->setParameter(':ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
-                ->setParameter(':expires', date('Y-m-d H:i:s', strtotime('+30seconds')))
-                ->execute();
+            )
+            ->setParameter(':qr', $new_code)
+            ->setParameter(':ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
+            ->setParameter(':expires', date('Y-m-d H:i:s', strtotime('+30seconds')))
+            ->execute();
 
-            if ($returnimage === true && !headers_sent()) {
+        if ($returnimage === true && !headers_sent()) {
 
-                header('Content-type: image/png');
+            header('Content-type: image/png');
 
-                $link = ADVANCEDLOGINSCRIPT_QR_PAGE;
+            $link = ADVANCEDLOGINSCRIPT_QR_PAGE;
 
-                $link = str_replace('{code}', $new_code, $link);
+            $link = str_replace('{code}', $new_code, $link);
 
-                $qr_image = new \Endroid\QrCode\QrCode();
-                $qr_image
-                    ->setText($link)
-                    ->setSize(300)
-                    ->setPadding(20)
-                    ->setErrorCorrection('high')
-                    ->setForegroundColor(array('r' => 0, 'g' => 0, 'b' => 0, 'a' => 0))
-                    ->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0))
-                    ->setLabel('Valid for 30 seconds')
-                    ->setLabelFontSize(16)
-                    ->render();
+            $qr_image = new \Endroid\QrCode\QrCode();
+            $qr_image
+                ->setText($link)
+                ->setSize(300)
+                ->setPadding(20)
+                ->setErrorCorrection('high')
+                ->setForegroundColor(array('r' => 0, 'g' => 0, 'b' => 0, 'a' => 0))
+                ->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0))
+                ->setLabel('Valid for 30 seconds')
+                ->setLabelFontSize(16)
+                ->render();
 
-            } else {
-                $qr_image = false;
-            }
+        } else {
+            $qr_image = false;
+        }
 
-            $_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY] = array(
-                'qr' => $new_code
-            );
+        $_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]['qr'] = $new_code;
 
-            return array(
-                'qr' => $new_code,
-                'qr_image' => $qr_image
-            );
+        return array(
+            'qr' => $new_code,
+            'qr_image' => $qr_image
+        );
     }
 
+    /**
+     * @param $code
+     * @return bool
+     */
     public function verifyQrCode($code)
     {
 
@@ -839,6 +840,10 @@ class Login extends Core
         return false;
     }
 
+    /**
+     * @param $code
+     * @return bool
+     */
     public function checkQrActivated($code)
     {
         if (!empty($code)) {
