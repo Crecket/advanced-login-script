@@ -69,7 +69,7 @@ class Login extends Core
         }
         $record = $get_user->fetch(); // fetch the results
         if (!$record) { // no results > no user was found
-            $this->addLoginAttempt(NULL, 0); // add a failed login attempt
+            $this->addLoginAttempt(NULL, 'not_found'); // add a failed login attempt
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_INVALID_LOGIN);
             return false;
         } elseif ($record['banned'] === 1) {
@@ -99,7 +99,7 @@ class Login extends Core
         } else {
 
             // no user found or password invalid, invalid login
-            $this->addLoginAttempt($record['id'], 0);
+            $this->addLoginAttempt($record['id'], 'invalid_password');
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_INVALID_LOGIN);
             return false;
 
