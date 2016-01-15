@@ -15,9 +15,6 @@ class Login extends Core
         if (!isset($_SESSION[ADVANCEDLOGINSCRIPT_MESSAGE_KEY])) {
             $_SESSION[ADVANCEDLOGINSCRIPT_MESSAGE_KEY] = array();
         }
-        if (session_status() == PHP_SESSION_NONE) {
-            throw new Exception("Session not started");
-        }
 
         $this->checkLoggedIn();
 
@@ -179,6 +176,7 @@ class Login extends Core
                         $this->addLoginAttempt($qrData['user_id'], 'qrcode');
                         $this->login_user($qrData['user_id']);
                         unset($_SESSION[ADVANCEDLOGINSCRIPT_QR_COOKIEKEY]);
+                        session_regenerate_id();
                         $this->destroyOldQrCodes();
                     } else {
                         Core::$loggedIn = false;
