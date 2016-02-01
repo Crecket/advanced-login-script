@@ -137,15 +137,7 @@ class Login extends Core
         $this->setMessage('success', ADVANCEDLOGINSCRIPT_USER_LOGGED_IN . $record['username']);
 
         if (ADVANCEDLOGINSCRIPT_ENABLE_JWT) {
-            // Set a JWT Token
-            $Jwt = new Jwt(ADVANCEDLOGINSCRIPT_SECRET_KEY);
-            $JwtToken = $Jwt->createToken($record);
-
-            if($JwtToken !== false){
-                $_SESSION['currentuser']['jwt_token'] = $JwtToken;
-                $this->setCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '_JWT_COOKIE', $JwtToken);
-            }
-
+            $this->refreshJWTtoken($record);
         }
 
         return true;
@@ -219,20 +211,13 @@ class Login extends Core
         if ($check_user->rowcount() > 0) {
             $user_data = $check_user->fetch();
             if ($this->verify_user($user_data)) {
+                unset($user_data['password']);
                 $_SESSION['currentuser'] = $user_data;
 
                 if (ADVANCEDLOGINSCRIPT_ENABLE_JWT) {
-                    // Set a JWT Token
-                    $Jwt = new Jwt(ADVANCEDLOGINSCRIPT_SECRET_KEY);
-                    $JwtToken = $Jwt->createToken($user_data);
-
-                    if($JwtToken !== false){
-                        $_SESSION['currentuser']['jwt_token'] = $JwtToken;
-                        $this->setCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '_JWT_COOKIE', $JwtToken);
-                    }
-
+                    $this->refreshJWTtoken();
                 }
-
+                
                 Core::$loggedIn = $_SESSION['currentuser']['id'];
                 $this->updateUserTime($_SESSION['currentuser']['id']);
                 return Core::$loggedIn;
@@ -270,6 +255,7 @@ class Login extends Core
 
         // destroy remember me cookie
         $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE);
+        $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '');
 
         // only remove the user data from the session
         unset($_SESSION['currentuser']);
@@ -381,6 +367,29 @@ class Login extends Core
         }
 
         return false;
+    }
+
+
+    /**
+     * Refresh the user JWT token, default user data is the current user session
+     * @param bool $user_data
+     */
+    public function refreshJWTtoken($user_data = false)
+    {
+        if ($user_data === false) {
+            $user_data = $_SESSION['currentuser'];
+        }
+
+        if (CORE::$loggedIn !== false) {
+            // Set a JWT Token
+            $Jwt = new Jwt(ADVANCEDLOGINSCRIPT_SECRET_KEY);
+            $JwtToken = $Jwt->createToken($user_data);
+
+            if ($JwtToken !== false) {
+                $_SESSION['currentuser']['jwt_token'] = $JwtToken;
+                $this->setCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '_JWT_COOKIE', $JwtToken);
+            }
+        }
     }
 
     /**

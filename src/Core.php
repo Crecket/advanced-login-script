@@ -5,7 +5,7 @@ namespace Crecket\AdvancedLogin;
 class Core
 {
 
-    public static $loggedIn;
+    public static $loggedIn = false;
 
     protected $conn;
 

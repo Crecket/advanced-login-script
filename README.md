@@ -158,11 +158,10 @@ This library now has JWT support so you can verify users without sending credent
 
 On login, a JWT token will be stored in both a session and a cookie.
 ```PHP
-$_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '_JWT_COOKIE']; 
-
-$_SESSION['currentuser']['jwt_token'];
+Crecket\AdvancedLogin::getCurrentUser(); // Returns the token if it exists
 ```
 
+In order to create a new token
 ```PHP
 $Jwt = new Crecket\AdvancedLogin\Jwt(ADVANCEDLOGINSCRIPT_SECRET_KEY);
 $JWTtoken = $Jwt->createToken(array(
