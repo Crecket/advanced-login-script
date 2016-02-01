@@ -1,6 +1,9 @@
 <?php
 // Move this outside off your vendor folder. It will get overwritten if you update this repo!
 
+// Debug mode
+define('ADVANCEDLOGINSCRIPT_DEBUG', true);
+
 // Mysql settings
 define('ADVANCEDLOGINSCRIPT_DB_HOST', 'localhost');
 define('ADVANCEDLOGINSCRIPT_DB_NAME', 'login_script_db_advanced');
@@ -20,6 +23,8 @@ define('ADVANCEDLOGINSCRIPT_ACTIVATION_LINK_LOCATION', 'http://advanced-login-sc
 
 // A random key
 define('ADVANCEDLOGINSCRIPT_SECRET_KEY', '5k8oIubGTOnIfTmkGGNAnWHZQxzHw2g9OTz1W3ApMHwxDbGqzVzT4BIa30yvYiyD');
+// Enable JWT Tokens
+define('ADVANCEDLOGINSCRIPT_ENABLE_JWT', false);
 
 // QR code page
 define('ADVANCEDLOGINSCRIPT_QR_PAGE', 'http://advanced-login-script/demo/checkQR.php?code={code}');

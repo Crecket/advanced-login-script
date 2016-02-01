@@ -139,6 +139,18 @@ class Login extends Core
         // display a message to notify the user
         $this->setMessage('success', ADVANCEDLOGINSCRIPT_USER_LOGGED_IN . $record['username']);
 
+        if (ADVANCEDLOGINSCRIPT_ENABLE_JWT) {
+            // Set a JWT Token
+            $Jwt = new Jwt(ADVANCEDLOGINSCRIPT_SECRET_KEY);
+            $JwtToken = $Jwt->createToken($record);
+
+            if($JwtToken !== false){
+                $_SESSION['currentuser']['jwt_token'] = $JwtToken;
+                $this->setCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '_JWT_COOKIE', $JwtToken);
+            }
+
+        }
+
         return true;
     }
 
@@ -210,6 +222,19 @@ class Login extends Core
             $user_data = $check_user->fetch();
             if ($this->verify_user($user_data)) {
                 $_SESSION['currentuser'] = $user_data;
+
+                if (ADVANCEDLOGINSCRIPT_ENABLE_JWT) {
+                    // Set a JWT Token
+                    $Jwt = new Jwt(ADVANCEDLOGINSCRIPT_SECRET_KEY);
+                    $JwtToken = $Jwt->createToken($user_data);
+
+                    if($JwtToken !== false){
+                        $_SESSION['currentuser']['jwt_token'] = $JwtToken;
+                        $this->setCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '_JWT_COOKIE', $JwtToken);
+                    }
+
+                }
+
                 Core::$loggedIn = $_SESSION['currentuser']['id'];
                 $this->updateUserTime($_SESSION['currentuser']['id']);
                 return Core::$loggedIn;

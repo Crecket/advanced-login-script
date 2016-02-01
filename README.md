@@ -18,6 +18,7 @@ Advanced-login-script features a bunch of basic and more advanced options to man
 3. crecket/secure-functions
 3. doctrine/dbal
 4. endroid/qrcode
+5. firebase/php-jwt
 
 
 ## Installation
