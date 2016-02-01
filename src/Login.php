@@ -379,13 +379,13 @@ class Login extends Core
     {
 
         if ($user_data === false) {
-            if (CORE::$loggedIn === false) {
+            if (Core::$loggedIn === false) {
                 return false;
             }
             $user_data = $_SESSION['currentuser'];
         }
 
-        if (CORE::$loggedIn !== false) {
+        if (Core::$loggedIn !== false) {
             // Set a JWT Token
             $Jwt = new Jwt(ADVANCEDLOGINSCRIPT_SECRET_KEY);
             $JwtToken = $Jwt->createToken($user_data);
@@ -455,7 +455,7 @@ class Login extends Core
 
         $this->checkLoggedIn();
 
-        if (CORE::$loggedIn !== false) {
+        if (Core::$loggedIn !== false) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_USER_ALREADY_LOGGED_IN);
             return false;
         }
