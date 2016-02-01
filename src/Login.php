@@ -217,7 +217,7 @@ class Login extends Core
                 if (ADVANCEDLOGINSCRIPT_ENABLE_JWT) {
                     $this->refreshJWTtoken();
                 }
-                
+
                 Core::$loggedIn = $_SESSION['currentuser']['id'];
                 $this->updateUserTime($_SESSION['currentuser']['id']);
                 return Core::$loggedIn;
@@ -373,11 +373,17 @@ class Login extends Core
     /**
      * Refresh the user JWT token, default user data is the current user session
      * @param bool $user_data
+     * @return bool
      */
     public function refreshJWTtoken($user_data = false)
     {
+
         if ($user_data === false) {
-            $user_data = $_SESSION['currentuser'];
+            if(!empty($_SESSION['currentuser'])){
+                $user_data = $_SESSION['currentuser'];
+            }else{
+                return false;
+            }
         }
 
         if (CORE::$loggedIn !== false) {
