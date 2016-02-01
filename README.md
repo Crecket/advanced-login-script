@@ -141,6 +141,8 @@ if ($login->verifyQrCode(@$_GET['code'])) {
 }
 ```
 
+Now in order to login you will need to trigger the checkLoggedIn() function
+
 ```PHP
 // checkLoggedIn() will verify the QR code, it is automatically run atleast once when you create the Login class
 $login = new Crecket\AdvancedLogin\Login();
@@ -148,6 +150,34 @@ $login = new Crecket\AdvancedLogin\Login();
 // Or run the following 
 $login->checkLoggedIn();
 ```
+
+
+#### JWT token verification
+
+This library now has JWT support so you can verify users without sending credentials.
+
+On login, a JWT token will be stored in both a session and a cookie.
+```PHP
+$_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '_JWT_COOKIE']; 
+
+$_SESSION['currentuser']['jwt_token'];
+```
+
+```PHP
+$Jwt = new Crecket\AdvancedLogin\Jwt(ADVANCEDLOGINSCRIPT_SECRET_KEY);
+$JWTtoken = $Jwt->createToken(array(
+    'id' => $_SESSION['currentuser']['user_id'],
+    'exp' => time() + 60 * 60   // You can set the expiration time by using the 'exp' tag
+                                // Default value is the same as the cookie expiration time
+));
+$OriginalData = $Jwt->verifyToken($JWTtoken);
+
+if($OriginalData === false){
+    // The token is invalid
+}
+```
+
+Now you can verify the token using
 
 ## Todo
 1. **Travis testing**

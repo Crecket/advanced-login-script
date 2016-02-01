@@ -13,6 +13,14 @@ class Jwt
 
     public function createToken($data)
     {
+
+        $data['iat'] = time();
+        // Set default expiration date
+        if (!isset($data['exp'])) {
+            $data['exp'] = ADVANCEDLOGINSCRIPT_COOKIE_STORE_DURATION;
+        }
+
+        // Try to encode the data
         try {
             return \Firebase\JWT\JWT::encode($data, $this->passphrase);
         } catch (\Exception $ex) {
