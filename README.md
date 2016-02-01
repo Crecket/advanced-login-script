@@ -158,25 +158,15 @@ This library now has JWT support so you can verify users without sending credent
 
 On login, a JWT token will be stored in both a session and a cookie.
 ```PHP
-Crecket\AdvancedLogin::getCurrentUser(); // Returns the token if it exists
+Crecket\AdvancedLogin\Jwt::getCurrentUser(); // Returns the token if it exists
 ```
 
-In order to create a new token
+In order to refresh the current user JWT token. This shouldn't be neccesary but it is possible
 ```PHP
-$Jwt = new Crecket\AdvancedLogin\Jwt(ADVANCEDLOGINSCRIPT_SECRET_KEY);
-$JWTtoken = $Jwt->createToken(array(
-    'id' => $_SESSION['currentuser']['user_id'],
-    'exp' => time() + 60 * 60   // You can set the expiration time by using the 'exp' tag
-                                // Default value is the same as the cookie expiration time
-));
-$OriginalData = $Jwt->verifyToken($JWTtoken);
-
-if($OriginalData === false){
-    // The token is invalid
-}
+$login->refreshJWTtoken(); 
 ```
 
-Now you can verify the token using
+Now you can use the token in your client-side applications.
 
 ## Todo
 1. **Travis testing**
