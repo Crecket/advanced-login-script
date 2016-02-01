@@ -15,6 +15,12 @@ class Core
     public function __construct()
     {
         $this->createConnection();
+        if (session_status() == PHP_SESSION_NONE) {
+            throw new Exception("Session not started");
+        }
+
+        $this->checkSession();
+
     }
 
     /**
@@ -124,7 +130,7 @@ class Core
             $expire = ADVANCEDLOGINSCRIPT_COOKIE_STORE_DURATION;
         }
 
-        if (setcookie($name, $value, $expire, ADVANCEDLOGINSCRIPT_COOKIE_FOLDER, ADVANCEDLOGINSCRIPT_COOKIE_DOMAIN, ADVANCEDLOGINSCRIPT_COOKIE_HTTPS_ONLY)) {
+        if (setcookie($name, $value, $expire, ADVANCEDLOGINSCRIPT_COOKIE_FOLDER, ADVANCEDLOGINSCRIPT_COOKIE_DOMAIN, ADVANCEDLOGINSCRIPT_COOKIE_SSL, ADVANCEDLOGINSCRIPT_COOKIE_HTTP_ONLY)) {
             return true;
         }
         return false;
@@ -140,6 +146,28 @@ class Core
         setcookie($name, null, time() - 3600, ADVANCEDLOGINSCRIPT_COOKIE_FOLDER);
     }
 
+
+    /**
+     * Forces session expiration and makes prevents session fixation
+     */
+    public function checkSession()
+    {
+
+        if (isset($_SESSION['SESSION_LAST_ACTIVITY']) && (time() - $_SESSION['SESSION_LAST_ACTIVITY'] > 1800)) {
+            // last request was more than 30 minutes ago
+            session_unset();     // unset $_SESSION variable for the run-time
+            session_destroy();   // destroy session data in storage
+        }
+        $_SESSION['SESSION_LAST_ACTIVITY'] = time(); // update last activity time stamp
+
+        if (!isset($_SESSION['SESSION_CREATED'])) {
+            $_SESSION['SESSION_CREATED'] = time();
+        } else if (time() - $_SESSION['SESSION_CREATED'] > 600) {
+            // session started more than 10 minutes ago
+            session_regenerate_id(true); // change session ID for the current session and invalidate old session ID
+            $_SESSION['SESSION_CREATED'] = time(); // update creation time
+        }
+    }
 }
 
 
