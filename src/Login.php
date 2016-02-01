@@ -191,6 +191,10 @@ class Login extends Core
             }
         }
 
+        if (Core::$loggedIn !== false && ADVANCEDLOGINSCRIPT_ENABLE_JWT) {
+            $this->refreshJWTtoken();
+        }
+
         return Core::$loggedIn;
     }
 
