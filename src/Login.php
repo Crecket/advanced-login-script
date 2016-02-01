@@ -379,11 +379,10 @@ class Login extends Core
     {
 
         if ($user_data === false) {
-            if(!empty($_SESSION['currentuser'])){
-                $user_data = $_SESSION['currentuser'];
-            }else{
+            if(CORE::$loggedIn === false){
                 return false;
             }
+            $user_data = $_SESSION['currentuser'];
         }
 
         if (CORE::$loggedIn !== false) {
