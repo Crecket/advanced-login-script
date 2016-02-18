@@ -452,9 +452,10 @@ class Login extends Core
      * @param $email
      * @param $password
      * @param $password_repeat
+     * @param $create_only
      * @return boolean
      */
-    public function register($username, $email, $password, $password_repeat)
+    public function register(string $username, string $email, string $password, string $password_repeat, bool $create_only)
     {
 
         $this->checkLoggedIn();
@@ -477,7 +478,7 @@ class Login extends Core
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_EMPTY_PASSWORDS);
         } elseif ($password !== $password_repeat) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_BOTH_PASSWORDS_SAME);
-        } elseif (strlen($password) < 8) {
+        } elseif ($create_only === true && strlen($password) < 8) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_SHORT_PASSWORDS);
         } elseif (strlen($username) > 64 || strlen($username) < 2) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_NAME_MINIMUM_LENGTH);
@@ -528,7 +529,9 @@ class Login extends Core
 
             if ($new_user > 0) {
                 $userid = $this->conn->lastInsertId();
-                $this->sendActivationCode($userid);
+                if ($create_only) {
+                    $this->sendActivationCode($userid);
+                }
                 unset($_SESSION['stored_register_fields']);
                 return $userid;
             }
@@ -537,6 +540,12 @@ class Login extends Core
     }
 
 
+    /**
+     * @param $password
+     * @param $repeat_password
+     * @param $code
+     * @return bool
+     */
     public function changeForgotPassword($password, $repeat_password, $code)
     {
         // get user attached to code
