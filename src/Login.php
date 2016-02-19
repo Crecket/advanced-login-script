@@ -455,7 +455,7 @@ class Login extends Core
      * @param $create_only
      * @return boolean
      */
-    public function register(string $username, string $email, string $password, string $password_repeat, bool $create_only = true)
+    public function register($username, $email, $password, $password_repeat, $create_only = true)
     {
 
         $this->checkLoggedIn();
