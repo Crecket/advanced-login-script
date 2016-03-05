@@ -78,7 +78,18 @@ class Core
 
         $mail = new \PHPMailer(); // create a new object
         $mail->IsSMTP(); // enable SMTP
-        $mail->SMTPDebug = 0; // debugging: 1 = errors and messages, 2 = messages only
+        if (ADVANCEDLOGINSCRIPT_DEBUG) {
+            $mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
+            $mail->SMTPOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                )
+            );
+        } else {
+            $mail->SMTPDebug = 0;
+        }
         $mail->SMTPAuth = true; // authentication enabled
         $mail->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for Gmail
         $mail->Host = ADVANCEDLOGINSCRIPT_EMAIL_HOST;
@@ -94,12 +105,7 @@ class Core
             $mail->addAddress($person['email'], $person['name']);
         }
 
-        if (!$mail->Send()) {
-            echo "Mailer Error: " . $mail->ErrorInfo;
-        } else {
-            return true;
-        }
-
+        return $mail->Send();
     }
 
 
