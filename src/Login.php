@@ -585,7 +585,10 @@ class Login extends Core
                     ->execute();
 
                 if ($update_user === 1) {
+                    $this->setMessage('success', ADVANCEDLOGINSCRIPT_USER_PASSWORD_UPDATE);
                     return true;
+                } else {
+                    $this->setMessage('error', ADVANCEDLOGINSCRIPT_USER_PASSWORD_UPDATE_FAIL);
                 }
             }
         }

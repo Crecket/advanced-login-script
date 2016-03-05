@@ -62,6 +62,8 @@ define('ADVANCEDLOGINSCRIPT_REGISER_SUCCESS', 'Your account has been created and
 define('ADVANCEDLOGINSCRIPT_REGISER_SUCCESS_NOMAIL', 'Your account has been created, you can now log in.');
 define('ADVANCEDLOGINSCRIPT_USER_ACTIVATED_SUCCESS', 'User has been activated succesfully');
 define('ADVANCEDLOGINSCRIPT_USER_ACTIVATED_FAIL', 'User has not been succesfully activated');
+define('ADVANCEDLOGINSCRIPT_USER_PASSWORD_UPDATE', 'Password has succesfully been updated');
+define('ADVANCEDLOGINSCRIPT_USER_PASSWORD_UPDATE_FAIL', 'Password has not been updated');
 define('ADVANCEDLOGINSCRIPT_USER_ACTIVATED_INVALID', 'This code is invalid or no longer active');
 define('ADVANCEDLOGINSCRIPT_USER_ACTIVATED_NO_ID', 'No in-active user found for this ID!');
 define('ADVANCEDLOGINSCRIPT_EMAIL_SEND_FAIL', 'A email was not succesfully sent to ');
