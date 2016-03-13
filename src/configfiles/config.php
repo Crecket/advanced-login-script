@@ -35,6 +35,8 @@ define('ADVANCEDLOGINSCRIPT_QR_COOKIEKEY', 'qrcode_verification');
 define('ADVANCEDLOGINSCRIPT_MESSAGE_KEY', 'login_system_messages');
 // Email settings
 define('ADVANCEDLOGINSCRIPT_EMAIL_HOST', 'smtp.gmail.com');
+// If your server has issues with ipv6 try to use:
+// define('ADVANCEDLOGINSCRIPT_EMAIL_HOST', gethostbyname('smtp.gmail.com'));
 define('ADVANCEDLOGINSCRIPT_EMAIL_USERNAME', 'email@mail.com');
 define('ADVANCEDLOGINSCRIPT_EMAIL_PASSWORD', '1234');
 define('ADVANCEDLOGINSCRIPT_EMAIL_FROM_NAME', 'your name');

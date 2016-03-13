@@ -91,9 +91,9 @@ class Core
             $mail->SMTPDebug = 0;
         }
         $mail->SMTPAuth = true; // authentication enabled
-        $mail->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for Gmail
+        $mail->SMTPSecure = 'ssl'; // tls or ssl
         $mail->Host = ADVANCEDLOGINSCRIPT_EMAIL_HOST;
-        $mail->Port = 465; // or 587
+        $mail->Port = 587; // 587 for tls or 465 for ssl
         $mail->IsHTML(true);
         $mail->Username = ADVANCEDLOGINSCRIPT_EMAIL_USERNAME;
         $mail->Password = ADVANCEDLOGINSCRIPT_EMAIL_PASSWORD;
