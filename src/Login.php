@@ -250,16 +250,17 @@ class Login extends Core
     {
 
         // remove cookie for this user/ip from database
-        $this->newBuilder()
-            ->delete('user_auth')
-            ->where('userid = :id AND ip = :ip')
-            ->setParameter('id', $_SESSION['currentuser']['id'])
-            ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
-            ->execute();
+        if(isset($_SESSION['currentuser'])){
+            $this->newBuilder()
+                ->delete('user_auth')
+                ->where('userid = :id AND ip = :ip')
+                ->setParameter('id', $_SESSION['currentuser']['id'])
+                ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
+                ->execute();
+        }
 
         // destroy remember me cookie
         $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE);
-        $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '');
 
         // only remove the user data from the session
         unset($_SESSION['currentuser']);
