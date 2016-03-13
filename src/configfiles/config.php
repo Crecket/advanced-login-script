@@ -18,9 +18,12 @@ define('ADVANCEDLOGINSCRIPT_COOKIE_HTTP_ONLY', false);
 define('ADVANCEDLOGINSCRIPT_COOKIE_STORE_DURATION', strtotime( '+14 days' ));
 define('ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE', 'remember_me');
 
+// Domain name, used in all links dynamically
+DEFINE('ADVANCEDLOGINSCRIPT_DOMAINNAME', 'http://advanced-login-script');
+
 // Forgotpassword link template
-define('ADVANCEDLOGINSCRIPT_RESETPASSWORD_LINK_LOCATION', 'http://advanced-login-script/demo/forgot_password.php?code={code}');
-define('ADVANCEDLOGINSCRIPT_ACTIVATION_LINK_LOCATION', 'http://advanced-login-script/demo/activate.php?code={code}');
+define('ADVANCEDLOGINSCRIPT_RESETPASSWORD_LINK_LOCATION', ADVANCEDLOGINSCRIPT_DOMAINNAME.'/demo/forgot_password.php?code={code}');
+define('ADVANCEDLOGINSCRIPT_ACTIVATION_LINK_LOCATION', ADVANCEDLOGINSCRIPT_DOMAINNAME.'/demo/activate.php?code={code}');
 
 // A random key
 define('ADVANCEDLOGINSCRIPT_SECRET_KEY', '5k8oIubGTOnIfTmkGGNAnWHZQxzHw2g9OTz1W3ApMHwxDbGqzVzT4BIa30yvYiyD');
@@ -28,7 +31,7 @@ define('ADVANCEDLOGINSCRIPT_SECRET_KEY', '5k8oIubGTOnIfTmkGGNAnWHZQxzHw2g9OTz1W3
 define('ADVANCEDLOGINSCRIPT_ENABLE_JWT', false);
 
 // QR code page
-define('ADVANCEDLOGINSCRIPT_QR_PAGE', 'http://advanced-login-script/demo/checkQR.php?code={code}');
+define('ADVANCEDLOGINSCRIPT_QR_PAGE', ADVANCEDLOGINSCRIPT_DOMAINNAME.'/demo/checkQR.php?code={code}');
 // QR code cookie key
 define('ADVANCEDLOGINSCRIPT_QR_COOKIEKEY', 'qrcode_verification');
 // The key where all messages will be stored in the session
@@ -41,7 +44,7 @@ define('ADVANCEDLOGINSCRIPT_EMAIL_USERNAME', 'email@mail.com');
 define('ADVANCEDLOGINSCRIPT_EMAIL_PASSWORD', '1234');
 define('ADVANCEDLOGINSCRIPT_EMAIL_FROM_NAME', 'your name');
 define('ADVANCEDLOGINSCRIPT_EMAIL_FROM_EMAIL', 'emailthat@willbeshown.com');
-define('ADVANCEDLOGINSCRIPT_EMAIL_DOMAIN', 'https://example.com');
+define('ADVANCEDLOGINSCRIPT_EMAIL_DOMAIN', ADVANCEDLOGINSCRIPT_DOMAINNAME);
 // Send activation code, true if you want to use activation system
 
 // Translations
