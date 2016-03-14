@@ -151,6 +151,18 @@ class Login extends Core
      */
     public function checkLoggedIn()
     {
+        // This check is only useful if the attacker tries to change the cookie while a session is active
+        if (isset($_SESSION[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE])) {
+            if (isset($_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE])) {
+                if ($_SESSION[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE] !== $_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE]) {
+                    $this->logout();
+                }
+            }
+        } else {
+            if (isset($_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE])) {
+                $_SESSION[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE] = $_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE];
+            }
+        }
 
         // user id is in session
         if (!empty($_SESSION['currentuser']['id'])) {
@@ -248,19 +260,45 @@ class Login extends Core
      */
     public function logout()
     {
+        $do_basic_delete = true;
+        if (isset($_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE])) {
+            $cookieData = explode("||", $_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE]);
+            if (count($cookieData) === 2) { // 2 parts should be stored in here
+                $this->newBuilder()
+                    ->delete('user_auth')
+                    ->where('ip = :ip OR selector = :selector')
+                    ->setParameter('selector', $cookieData[0])
+                    ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
+                    ->execute();
+                $do_basic_delete = false;
+            }
+        }
 
-        // remove cookie for this user/ip from database
-        if(isset($_SESSION['currentuser'])){
-            $this->newBuilder()
-                ->delete('user_auth')
-                ->where('userid = :id AND ip = :ip')
-                ->setParameter('id', $_SESSION['currentuser']['id'])
-                ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
-                ->execute();
+        // Just delete all cookies for this IP
+        if ($do_basic_delete) {
+            if (Core::$loggedIn !== false) {
+                $this->newBuilder()
+                    ->delete('user_auth')
+                    ->where('ip = :ip AND userid = :userid')
+                    ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
+                    ->setParameter('userid', Core::$loggedIn)
+                    ->execute();
+            } else {
+                $this->newBuilder()
+                    ->delete('user_auth')
+                    ->where('ip = :ip')
+                    ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
+                    ->execute();
+            }
         }
 
         // destroy remember me cookie
         $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE);
+        // destroy remember me jwt cookie
+        $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE . '_JWT_COOKIE');
+
+        // unset variable from session
+        unset($_SESSION[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE]);
 
         // only remove the user data from the session
         unset($_SESSION['currentuser']);
@@ -299,29 +337,27 @@ class Login extends Core
         if (isset($_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE])) {
             $cookieData = explode("||", $_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE]);
             if (count($cookieData) == 2) { // 2 parts should be stored in here
-
                 // get the data based on selector from cookie
                 $selectorData = $this->newBuilder()
                     ->select('*')
                     ->from('user_auth')
-                    ->where('selector = :selector AND ip = :ip')
+                    ->where('selector = :selector')
                     ->setParameter('selector', $cookieData[0])
-                    ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
                     ->execute();
 
                 if ($selectorData->rowcount() > 0) {
-
                     // fetch database results
                     $selectorData = $selectorData->fetch();
-
                     // compare hash and check if cookie has expired
-                    if ($selectorData['token'] == hash('sha256', $cookieData[1] . filter_input(INPUT_SERVER, 'REMOTE_ADDR') . ADVANCEDLOGINSCRIPT_SECRET_KEY) && $selectorData['expires'] > date('Y-m-d H:i:s')) {
+                    if ($selectorData['token'] == hash('sha256', $cookieData[1] . ADVANCEDLOGINSCRIPT_SECRET_KEY . filter_input(INPUT_SERVER, 'HTTP_USER_AGENT')) && $selectorData['expires'] > date('Y-m-d H:i:s')) {
                         return $selectorData['userid'];
                     }
                 }
             }
             $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE);
         }
+
+        $_SESSION[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE] = false;
         return false;
     }
 
@@ -332,22 +368,27 @@ class Login extends Core
      */
     public function set_auth_cookie($userid)
     {
+        if (isset($_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE])) {
+            $cookieData = explode("||", $_COOKIE[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE]);
+            if (count($cookieData) == 2) { // 2 parts should be stored in here
+                $this->newBuilder()
+                    ->delete('user_auth')
+                    ->where('selector = :selector')
+                    ->setParameter('selector', $cookieData[0])
+                    ->execute();
+            }
+        }
 
-        $selector = \SecureFuncs\SecureFuncs::randomString(32);
-        $random = \SecureFuncs\SecureFuncs::randomString(64);
+        $selector = \SecureFuncs\SecureFuncs::randomString(64);
+        $random = \SecureFuncs\SecureFuncs::randomString(128);
         $token = $selector . "||" . $random;
-        $randomDb = hash('sha256', $random . filter_input(INPUT_SERVER, 'REMOTE_ADDR') . ADVANCEDLOGINSCRIPT_SECRET_KEY);
+        $randomDb = hash('sha256', $random . ADVANCEDLOGINSCRIPT_SECRET_KEY . filter_input(INPUT_SERVER, 'HTTP_USER_AGENT'));
         $expiresDb = date('Y/m/d H:i:s', ADVANCEDLOGINSCRIPT_COOKIE_STORE_DURATION);
 
-//        $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE);
-        if ($this->setCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE, $token)) {
+        $_SESSION[ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE] = $token; // Store the cooke in the session aswell;
 
-            $this->newBuilder()
-                ->delete('user_auth')
-                ->where('ip = :ip AND userid = :id')
-                ->setParameter('ip', filter_input(INPUT_SERVER, 'REMOTE_ADDR'))
-                ->setParameter('id', $userid)
-                ->execute();
+        $this->deleteCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE);
+        if ($this->setCookie(ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE, $token)) {
 
             $insertToken = $this->newBuilder()
                 ->insert('user_auth')

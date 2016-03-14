@@ -10,16 +10,16 @@ define('ADVANCEDLOGINSCRIPT_DB_NAME', 'login_script_db_advanced');
 define('ADVANCEDLOGINSCRIPT_DB_USER', 'root');
 define('ADVANCEDLOGINSCRIPT_DB_PASS', '1234');
 
-// Cookie settings
-define('ADVANCEDLOGINSCRIPT_COOKIE_FOLDER', '/');
-define('ADVANCEDLOGINSCRIPT_COOKIE_DOMAIN', NULL);
-define('ADVANCEDLOGINSCRIPT_COOKIE_SSL', NULL);
-define('ADVANCEDLOGINSCRIPT_COOKIE_HTTP_ONLY', false);
-define('ADVANCEDLOGINSCRIPT_COOKIE_STORE_DURATION', strtotime( '+14 days' ));
-define('ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE', 'remember_me');
-
 // Domain name, used in all links dynamically
 DEFINE('ADVANCEDLOGINSCRIPT_DOMAINNAME', 'http://advanced-login-script');
+
+// Cookie settings
+define('ADVANCEDLOGINSCRIPT_COOKIE_FOLDER', '/');
+define('ADVANCEDLOGINSCRIPT_COOKIE_DOMAIN', 'advanced-login-script');
+define('ADVANCEDLOGINSCRIPT_COOKIE_SSL', false); // When possible, make sure to use SSl!
+define('ADVANCEDLOGINSCRIPT_COOKIE_HTTP_ONLY', true);
+define('ADVANCEDLOGINSCRIPT_COOKIE_STORE_DURATION', strtotime( '+14 days' ));
+define('ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE', 'remember_me');
 
 // Forgotpassword link template
 define('ADVANCEDLOGINSCRIPT_RESETPASSWORD_LINK_LOCATION', ADVANCEDLOGINSCRIPT_DOMAINNAME.'/demo/forgot_password.php?code={code}');
