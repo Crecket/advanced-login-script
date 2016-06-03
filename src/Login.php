@@ -488,24 +488,20 @@ class Login extends Core
 
     /* ======================= REGISTRATION ============================ */
 
+
     /**
-     * Register a new user
+     * Create new user
      * @param $username
      * @param $email
      * @param $password
      * @param $password_repeat
-     * @param $create_only
-     * @return boolean
+     * @param bool $create_only
+     * @return bool
+     * @throws \Exception
      */
     public function register($username, $email, $password, $password_repeat, $create_only = true)
     {
-
         $this->checkLoggedIn();
-
-        if (Core::$loggedIn !== false) {
-            $this->setMessage('error', ADVANCEDLOGINSCRIPT_USER_ALREADY_LOGGED_IN);
-            return false;
-        }
 
         $username = strtolower(trim($username));
         $_SESSION['stored_register_fields']['username'] = $username;
@@ -550,12 +546,38 @@ class Login extends Core
                 }
                 return false;
             }
+            // hash the password with bcrypt
             $password_hash = \SecureFuncs\SecureFuncs::password_hash($password, PASSWORD_DEFAULT);
+
+
+            $id_exists = 0;
+            // do while loop until we find a id which isn't used
+            while ($id_exists !== false) {
+                // generate random id
+                $id = \SecureFuncs\SecureFuncs::randomInt(99999, 99999999);
+
+                // check if random id already exists
+                $check_id = $this->newBuilder()
+                    ->select('id')
+                    ->from('users')
+                    ->where('id = :id')
+                    ->setParameter(':id', $id)
+                    ->execute();
+                if ($check_id->rowcount() === 0) {
+                    $id_exists = false;
+                } else {
+                    $id_exists++;
+                    if($id_exists > 99){
+                        throw new \Exception('After 99 attempts we couldn\'t find a secure random id for this user.');
+                    }
+                }
+            }
 
             $new_user = $this->newBuilder()
                 ->insert('users')
                 ->values(
                     array(
+                        'id' => ':id',
                         'username' => ':username',
                         'password' => ':password',
                         'email' => ':email',
@@ -563,6 +585,7 @@ class Login extends Core
                         'activation_created' => 'now()'
                     )
                 )
+                ->setParameter(':id', $id)
                 ->setParameter(':username', $username)
                 ->setParameter(':password', $password_hash)
                 ->setParameter(':email', $email)
