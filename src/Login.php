@@ -510,7 +510,7 @@ class Login extends Core
 
         if (empty($username)) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_EMPTY_NAME);
-        } elseif (preg_match("/^[0-9A-Za-z_]+$/", $username) == 0) {
+        } elseif (preg_match("/^[0-9A-Za-z_ ]+$/", $username) == 0) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_INVALID_NAME);
         } elseif (empty($password) || empty($password_repeat)) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_EMPTY_PASSWORDS);
