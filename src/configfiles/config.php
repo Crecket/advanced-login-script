@@ -18,12 +18,12 @@ define('ADVANCEDLOGINSCRIPT_COOKIE_FOLDER', '/');
 define('ADVANCEDLOGINSCRIPT_COOKIE_DOMAIN', 'advanced-login-script');
 define('ADVANCEDLOGINSCRIPT_COOKIE_SSL', false); // When possible, make sure to use SSl!
 define('ADVANCEDLOGINSCRIPT_COOKIE_HTTP_ONLY', true);
-define('ADVANCEDLOGINSCRIPT_COOKIE_STORE_DURATION', strtotime( '+14 days' ));
+define('ADVANCEDLOGINSCRIPT_COOKIE_STORE_DURATION', strtotime('+14 days'));
 define('ADVANCEDLOGINSCRIPT_REMEMBER_ME_COOKIE', 'remember_me');
 
 // Forgotpassword link template
-define('ADVANCEDLOGINSCRIPT_RESETPASSWORD_LINK_LOCATION', ADVANCEDLOGINSCRIPT_DOMAINNAME.'/demo/forgot_password.php?code={code}');
-define('ADVANCEDLOGINSCRIPT_ACTIVATION_LINK_LOCATION', ADVANCEDLOGINSCRIPT_DOMAINNAME.'/demo/activate.php?code={code}');
+define('ADVANCEDLOGINSCRIPT_RESETPASSWORD_LINK_LOCATION', ADVANCEDLOGINSCRIPT_DOMAINNAME . '/demo/forgot_password.php?code={code}');
+define('ADVANCEDLOGINSCRIPT_ACTIVATION_LINK_LOCATION', ADVANCEDLOGINSCRIPT_DOMAINNAME . '/demo/activate.php?code={code}');
 
 // A random key
 define('ADVANCEDLOGINSCRIPT_SECRET_KEY', '5k8oIubGTOnIfTmkGGNAnWHZQxzHw2g9OTz1W3ApMHwxDbGqzVzT4BIa30yvYiyD');
@@ -31,7 +31,7 @@ define('ADVANCEDLOGINSCRIPT_SECRET_KEY', '5k8oIubGTOnIfTmkGGNAnWHZQxzHw2g9OTz1W3
 define('ADVANCEDLOGINSCRIPT_ENABLE_JWT', false);
 
 // QR code page
-define('ADVANCEDLOGINSCRIPT_QR_PAGE', ADVANCEDLOGINSCRIPT_DOMAINNAME.'/demo/checkQR.php?code={code}');
+define('ADVANCEDLOGINSCRIPT_QR_PAGE', ADVANCEDLOGINSCRIPT_DOMAINNAME . '/demo/checkQR.php?code={code}');
 // QR code cookie key
 define('ADVANCEDLOGINSCRIPT_QR_COOKIEKEY', 'qrcode_verification');
 // The key where all messages will be stored in the session
@@ -45,7 +45,6 @@ define('ADVANCEDLOGINSCRIPT_EMAIL_PASSWORD', '1234');
 define('ADVANCEDLOGINSCRIPT_EMAIL_FROM_NAME', 'your name');
 define('ADVANCEDLOGINSCRIPT_EMAIL_FROM_EMAIL', 'emailthat@willbeshown.com');
 define('ADVANCEDLOGINSCRIPT_EMAIL_DOMAIN', ADVANCEDLOGINSCRIPT_DOMAINNAME);
-// Send activation code, true if you want to use activation system
 
 // Translations
 define('ADVANCEDLOGINSCRIPT_USER_ALREADY_LOGGED_IN', 'You\'re already logged in!');

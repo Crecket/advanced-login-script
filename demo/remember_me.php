@@ -26,9 +26,9 @@ unset($_SESSION[ADVANCEDLOGINSCRIPT_MESSAGE_KEY]);
 </div>
 <div class="body">
     <?php if (Crecket\AdvancedLogin\Core::$loggedIn !== false): ?>
-        <p>If you see this it means that you've been logged in after your session was destroyed using a cookie.</p>
+        <p>If you see this it means that you've been logged in using a cookie after your session was destroyed.</p>
     <?php else: ?>
-        <p>If you see this it means that you've NOT logged in.</p>
+        <p>If you see this it means that you're NOT logged in.</p>
     <?php endif; ?>
 
     <br>

@@ -6,6 +6,9 @@ namespace Crecket\AdvancedLogin;
 class Login extends Core
 {
 
+    public $ActivationFunc = false;
+    public $ResetPasswordFunc = false;
+
     /**
      * Login constructor.
      */
@@ -243,6 +246,10 @@ class Login extends Core
         return Core::$loggedIn;
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function updateUserTime($id)
     {
         $update = $this->newBuilder()
@@ -567,7 +574,7 @@ class Login extends Core
                     $id_exists = false;
                 } else {
                     $id_exists++;
-                    if($id_exists > 99){
+                    if ($id_exists > 99) {
                         throw new \Exception('After 99 attempts we couldn\'t find a secure random id for this user.');
                     }
                 }
@@ -593,12 +600,11 @@ class Login extends Core
                 ->execute();
 
             if ($new_user > 0) {
-                $userid = $this->conn->lastInsertId();
                 if ($send_activation) {
-                    $this->sendActivationCode($userid);
+                    $this->sendActivationCode($id);
                 }
                 unset($_SESSION['stored_register_fields']);
-                return $userid;
+                return $id;
             }
         }
         return false;
@@ -667,6 +673,7 @@ class Login extends Core
      */
     public function checkForgotPasswordCode($code)
     {
+
         if (!empty($code)) {
             $get_user = $this->conn->prepare('SELECT * from users where forgotpassword_code = :code');
             $get_user->bindparam(':code', $code);
@@ -719,12 +726,24 @@ class Login extends Core
             $password_token = \SecureFuncs\SecureFuncs::randomString(40);
             //Replace the {code} tag with the input forgot password code
             $link = self::ForgotpasswordLinkCreator($password_token);
-
-            // Email template
+            // Email title
             $title = "Password reset";
-            $message = "Please click the following link to reset your password and gain access to your " . ADVANCEDLOGINSCRIPT_EMAIL_DOMAIN . " account. <br>\n";
-            $message .= "<a href='" . $link . "'>" . $link . "</a><br>\n<br>\n";
-            $message .= "If you did not request a password request, please ignore this email.";
+
+            // check if a custom activation template is set
+            if ($this->ResetPasswordFunc !== false) {
+                // check if it is a function
+                if (is_callable($this->ResetPasswordFunc)) {
+                    // create the message
+                    $message = call_user_func($this->ResetPasswordFunc, $link);
+                } else {
+                    // parse the string
+                    $message = str_replace("{url}", $link, $this->ResetPasswordFunc);
+                }
+            } else {
+                $message = "Please click the following link to reset your password and gain access to your " . ADVANCEDLOGINSCRIPT_EMAIL_DOMAIN . " account. <br>\n";
+                $message .= "<a href='" . $link . "'>" . $link . "</a><br>\n<br>\n";
+                $message .= "If you did not request a password request, please ignore this email.";
+            }
 
             // update database with the new code and timestamp
             $update_user = $this->newBuilder()
@@ -732,7 +751,8 @@ class Login extends Core
                 ->update('users')
                 ->set('forgotpassword_code', ':code')
                 ->setParameter('code', $password_token)
-                ->set('forgotpassword_created', 'now()')
+                ->set('forgotpassword_created', ':curdate')
+                ->setParameter('curdate', date('Y-m-d H:i:s'))
                 ->where('id = :id')
                 ->setParameter('id', $data['id'])
                 ->execute();
@@ -840,9 +860,21 @@ class Login extends Core
             $link = str_replace("{code}", $data['activation_code'], ADVANCEDLOGINSCRIPT_ACTIVATION_LINK_LOCATION);
 
             $title = "Account activation";
-            $message = "Please click the following link to complete your account activation for " . ADVANCEDLOGINSCRIPT_EMAIL_DOMAIN . "<br>\n";
-            $message .= "<a href='" . $link . "'>" . $link . "</a><br>\n<br>\n";
-            $message .= "If your account has not been activated within 24 hours we reserve the right to temporarily remove your account and registration.";
+            // check if a custom activation template is set
+            if ($this->ActivationFunc !== false) {
+                // check if it is a function
+                if (is_callable($this->ActivationFunc)) {
+                    // create the message
+                    $message = call_user_func($this->ActivationFunc, $link);
+                } else {
+                    // parse the string
+                    $message = str_replace("{url}", $link, $this->ActivationFunc);
+                }
+            } else {
+                $message = "Please click the following link to complete your account activation for " . ADVANCEDLOGINSCRIPT_EMAIL_DOMAIN . "<br>\n";
+                $message .= "<a href='" . $link . "'>" . $link . "</a><br>\n<br>\n";
+                $message .= "If your account has not been activated within 24 hours we reserve the right to temporarily remove your account and registration.";
+            }
 
             $targets[] = array('name' => $data['username'], 'email' => $data['email']);
 
@@ -851,7 +883,6 @@ class Login extends Core
             } else {
                 $this->setMessage('error', ADVANCEDLOGINSCRIPT_EMAIL_SEND_FAIL . $data['email']);
             }
-
         }
         return false;
     }
@@ -979,6 +1010,9 @@ class Login extends Core
         return false;
     }
 
+    /**
+     *
+     */
     public function destroyOldQrCodes()
     {
         $this->newBuilder()

@@ -7,6 +7,18 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/src/configfiles/config.php';
 
 $login = new Crecket\AdvancedLogin\Login();
 
+// set the template to be used as a string. {url} will be replaced automatically with the required url
+$login->ActivationFunc = "Please click the following link to activate your account. <a href='{url}'>{url}</a>";
+// OR a function with the first parameter being the url
+$login->ActivationFunc = function ($url) {
+    // use a template engine or do some action to generate the template (twig for example)
+    $template = file_get_contents(__DIR__ . '/email_templates/activation.html');
+    return str_replace("{url}", $url, $template);
+};
+
+// test your function like this: first parameter will be the activation url
+//echo call_user_func($login->ActivationFunc, 'http://some_url');exit;
+
 if (Crecket\AdvancedLogin\Core::$loggedIn !== false) { // check if use is logged in
     header('Location: index.php');
 }

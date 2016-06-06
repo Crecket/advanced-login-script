@@ -5,6 +5,20 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/src/configfiles/config.php';
 
 $login = new Crecket\AdvancedLogin\Login();
+
+// set the template to be used as a string. {url} will be replaced automatically with the required url
+$login->ResetPasswordFunc = "Please click the following link to set a new password. <a href='{url}'>{url}</a>";
+// OR a function with the first parameter being the url
+$login->ResetPasswordFunc = function ($url) {
+    // use a template engine or do some action to generate the template (twig for example)
+    $template = file_get_contents(__DIR__ . '/email_templates/password_reset.html');
+    return str_replace("{url}", $url, $template);
+};
+
+// test your function like this: first parameter will be the reset url
+//echo call_user_func($login->ResetPasswordFunc, 'http://some_url');
+
+
 $login->checkLoggedIn();
 
 
@@ -13,6 +27,8 @@ if (Crecket\AdvancedLogin\Core::$loggedIn !== false) {
 }
 
 $show_request_form = true; // default is yes whether to show the request email form is shown
+
+$show_password_form = false;
 
 // check if code isset
 if (!empty($_GET['code'])) {
