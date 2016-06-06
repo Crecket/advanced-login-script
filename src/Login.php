@@ -495,11 +495,11 @@ class Login extends Core
      * @param $email
      * @param $password
      * @param $password_repeat
-     * @param bool $create_only
+     * @param bool $send_activation
      * @return bool
      * @throws \Exception
      */
-    public function register($username, $email, $password, $password_repeat, $create_only = true)
+    public function register($username, $email, $password, $password_repeat, $send_activation = true)
     {
         $this->checkLoggedIn();
 
@@ -516,7 +516,7 @@ class Login extends Core
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_EMPTY_PASSWORDS);
         } elseif ($password !== $password_repeat) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_BOTH_PASSWORDS_SAME);
-        } elseif ($create_only === true && strlen($password) < 8) {
+        } elseif ($send_activation === true && strlen($password) < 8) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_SHORT_PASSWORDS);
         } elseif (strlen($username) > 64 || strlen($username) < 2) {
             $this->setMessage('error', ADVANCEDLOGINSCRIPT_REGISTER_NAME_MINIMUM_LENGTH);
@@ -594,7 +594,7 @@ class Login extends Core
 
             if ($new_user > 0) {
                 $userid = $this->conn->lastInsertId();
-                if ($create_only) {
+                if ($send_activation) {
                     $this->sendActivationCode($userid);
                 }
                 unset($_SESSION['stored_register_fields']);
