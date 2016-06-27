@@ -90,10 +90,10 @@ class Core
         } else {
             $mail->SMTPDebug = 0;
         }
-        $mail->SMTPAuth = true; // authentication enabled
-        $mail->SMTPSecure = 'ssl'; // tls or ssl
+        $mail->SMTPAuth = true;
+        $mail->SMTPSecure = 'tls';
         $mail->Host = ADVANCEDLOGINSCRIPT_EMAIL_HOST;
-        $mail->Port = 587; // 587 for tls or 465 for ssl
+        $mail->Port = 587;
         $mail->IsHTML(true);
         $mail->Username = ADVANCEDLOGINSCRIPT_EMAIL_USERNAME;
         $mail->Password = ADVANCEDLOGINSCRIPT_EMAIL_PASSWORD;

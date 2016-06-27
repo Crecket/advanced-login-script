@@ -455,7 +455,6 @@ class Login extends Core
      * @param $target
      * @param $type
      * @return mixed
-     * @throws Exception
      */
     public function addLoginAttempt($target, $type)
     {
