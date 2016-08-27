@@ -823,7 +823,7 @@ class Login extends Core
 
                     if ($update_user === 1) {
                         $this->setMessage('success', ADVANCEDLOGINSCRIPT_USER_ACTIVATED_SUCCESS);
-                        return true;
+                        return $user_data['id']; // return user id
                     } else {
                         $this->setMessage('error', ADVANCEDLOGINSCRIPT_USER_ACTIVATED_FAIL);
                     }
